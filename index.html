@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avurudu Crush - සුබ අලුත් අවුරුද්දක්!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base Styles */
+        :root {
+            --avurudu-red: #E53935;
+            --avurudu-yellow: #FFD700;
+            --avurudu-orange: #FF8C00;
+            --avurudu-green: #4CAF50;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+            background: url('https://www.creativefabrica.com/wp-content/uploads/2021/11/29/Mandala-Golden-Gradient-Graphics-20917439-1-1-580x387.jpg') no-repeat center center;
+            background-size: cover;
+        }
+        
+        /* Blurred Overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+        
+        .welcome-container {
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(8px);
+            border: 0px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        h1 {
+            color: var(--avurudu-red);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        p {
+            color: #555;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .start-btn {
+            background-color: var(--avurudu-red);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.4);
+        }
+        
+        .start-btn:hover {
+            background-color: #C62828;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(229, 57, 53, 0.6);
+        }
+        
+        /* Festive Decorations */
+        .flower {
+            position: absolute;
+            opacity: 0.6;
+            animation: falling 10s linear infinite;
+            z-index: 5;
+        }
+        
+        @keyframes falling {
+            0% { transform: translateY(-100px) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        /* Music control button */
+        .music-control {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            p { font-size: 1rem; }
+            .welcome-container { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Music (hidden) -->
+    <audio id="bgMusic" autoplay loop>
+        <source src="candy_crush_outro1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Decorative Flowers (Optional) -->
+    <div class="flower" style="left: 10%; top: -50px; animation-delay: 0s;">🌸</div>
+    <div class="flower" style="left: 30%; top: -30px; animation-delay: 2s;">🌼</div>
+    <div class="flower" style="left: 70%; top: -70px; animation-delay: 4s;">🌺</div>
+    <div class="flower" style="left: 90%; top: -20px; animation-delay: 1s;">🌻</div>
+    
+    <!-- Main Welcome Content -->
+    <div class="welcome-container">
+        <h1>අවුරුදු CRUSH</h1>
+        <p>සුබ අලුත් අවුරුද්දක් වේවා! ❤️</p>
+        <button class="start-btn" onclick="window.location.href='game.html'">
+            <i class="fas fa-play"></i> Start
+        </button>
+    </div>
+    
+    <script>
+        // Optional: Add confetti effect on button click
+        document.querySelector('.start-btn').addEventListener('click', function() {
+            // Redirect to main page
+            window.location.href = "game2.html";
+        });
+        
+        // Autoplay music with user interaction (helps with browser autoplay policies)
+        document.body.addEventListener('click', function() {
+            bgMusic.play().catch(e => console.log('Autoplay prevented:', e));
+        }, { once: true });
+    </script>
+</body>
+</html>

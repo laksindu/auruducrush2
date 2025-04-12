@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aluth Avurudu Sweet Match - Sinhala New Year Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Noto+Sans+Sinhala:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #D35400;
+            --secondary: #E67E22;
+            --accent: #F39C12;
+            --light: #FFF5E6;
+            --dark: #2C3E50;
+            --success: #27AE60;
+            --danger: #E74C3C;
+            --warning: #F1C40F;
+            --info: #3498DB;
+        }
+        
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Baloo 2', 'Noto Sans Sinhala', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('images.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--dark);
+            position: relative;
+        }
+       audio {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 245, 230, 0.85);
+            z-index: -1;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: var(--dark);
+            opacity: 0.8;
+        }
+        
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            max-height: 400px;
+            aspect-ratio: 1/1;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border: 8px solid var(--primary);
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="50" height="50" x="0" y="0" fill="%23FFF5E6"/><rect width="50" height="50" x="50" y="50" fill="%23FFF5E6"/></svg>');
+            background-size: 30px 30px;
+        }
+        
+        .tile {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .sweet {
+            width: 80%;
+            height: 80%;
+            border-radius: 15px;
+            position: relative;
+            transition: transform 0.2s ease-out, opacity 0.3s;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            will-change: transform;
+            z-index: 2;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: 0px solid rgba(255,255,255,0.5);
+        }
+        
+        .sweet:after {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0.6;
+        }
+        
+        .sweet.dragging {
+            z-index: 10;
+            transition: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: scale(1.1);
+        }
+        
+        .sweet.matched {
+            animation: pop 0.5s forwards;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        
+        .special-sweet {
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: calc(min(3vw, 18px));
+        }
+        
+        .striped-h {
+            background: rgba(255,255,255,0.7);
+            width: 100%;
+            height: 30%;
+            border-radius: 10px;
+        }
+        
+        .striped-v {
+            background: rgba(255,255,255,0.7);
+            width: 30%;
+            height: 100%;
+            border-radius: 10px;
+        }
+        
+        .wrapped {
+            width: 60%;
+            height: 60%;
+            border: 3px solid rgba(255,255,255,0.7);
+            border-radius: 50%;
+        }
+        
+        .sweet-bomb {
+            width: 70%;
+            height: 70%;
+            background: conic-gradient(
+                var(--warning), var(--secondary), var(--danger), #9b59b6, 
+                var(--info), var(--success), var(--warning)
+            );
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,255,255,0.8);
+            animation: rotateColors 2s linear infinite;
+        }
+        
+        @keyframes rotateColors {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+            padding: 15px 0;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        
+        .info-box {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 12px 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+            flex: 1;
+            text-align: center;
+            justify-content: center;
+            border: 2px solid var(--primary);
+        }
+        
+        .score {
+            color: var(--primary);
+        }
+        
+        .moves {
+            color: var(--danger);
+        }
+        
+        .target {
+            background: var(--success);
+            color: white;
+            margin-left: 8px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 15px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 2px solid white;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .direction-indicator {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+            display: none;
+        }
+        
+        .direction-indicator.active {
+            display: block;
+        }
+        
+        .direction-arrow {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: var(--secondary);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--primary);
+        }
+        
+        .level-complete {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            display: none;
+            border-radius: 12px;
+        }
+        
+        .level-complete.show {
+            display: flex;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .level-complete h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .level-complete p {
+            margin: 8px 0;
+            font-size: 1.2rem;
+        }
+        
+        .level-complete button {
+            margin-top: 20px;
+            background: linear-gradient(to right, var(--success), #2ECC71);
+            font-size: 1.1rem;
+            padding: 15px 30px;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 4;
+        }
+        
+        .sound-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 200;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border: 2px solid var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .avurudu-decoration {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            z-index: -1;
+            opacity: 0.8;
+        }
+        
+        .decoration-1 {
+            top: 20px;
+            left: 20px;
+            transform: rotate(-15deg);
+        }
+        
+        .decoration-2 {
+            bottom: 20px;
+            right: 20px;
+            transform: rotate(15deg);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 500px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .info-box {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .avurudu-decoration {
+                width: 60px;
+                height: 60px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .game-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .avurudu-decoration {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Add this audio element -->
+    <audio id="bgMusic" loop>
+        <source src="candy_crush_outro1.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <div class="container">
+        <div class="header">
+            <h1>අවුරුදු CRUSH</h1>
+            <p>Match Sinhala New Year sweets and celebrate!</p>
+        </div>
+    
+        
+        <div class="game-info">
+            <div class="info-box score">Score: <span id="score">0</span></div>
+            <div class="info-box moves">Moves: <span id="moves">20</span> <span class="target" id="target">Target: 1000</span></div>
+        </div>
+        
+        <div class="game-container">
+            <div class="game-board" id="gameBoard"></div>
+            <div class="direction-indicator" id="directionIndicator"></div>
+            
+            <div class="level-complete" id="levelComplete">
+                <h2>Level Complete!</h2>
+                <p>Score: <span id="finalScore">0</span></p>
+                <p>Stars: <span id="stars">★★★</span></p>
+                <button id="nextLevel">Next Level ★</button>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="restart">🔄 New Game</button>
+            <button id="hint">💡 Hint</button>
+        </div>
+    </div>
+
+    <script>
+                // Background music
+        // Background music handling
+const bgMusic = document.getElementById('bgMusic');
+bgMusic.volume = 0.20; // Set volume to 50%
+
+// Attempt to autoplay with a trick
+function enableAutoplay() {
+    // Unmute the audio (must happen after user interaction)
+    bgMusic.muted = false;
+    
+    // Try to play (may still fail due to policies)
+    bgMusic.play().catch(e => {
+        console.log("Autoplay prevented:", e);
+        // Fallback: Show a play button if autoplay fails
+        showPlayButton();
+    });
+}
+
+// Try these events to trigger autoplay
+document.addEventListener('DOMContentLoaded', enableAutoplay);
+window.addEventListener('load', enableAutoplay);
+
+// Fallback play button (only shows if autoplay fails)
+function showPlayButton() {
+    const playBtn = document.createElement('button');
+    playBtn.textContent = '▶ Play Music';
+    playBtn.style.position = 'fixed';
+    playBtn.style.bottom = '20px';
+    playBtn.style.right = '20px';
+    playBtn.style.zIndex = '1000';
+    playBtn.style.padding = '10px 15px';
+    playBtn.style.borderRadius = '20px';
+    playBtn.style.backgroundColor = 'var(--primary)';
+    playBtn.style.color = 'white';
+    playBtn.style.border = 'none';
+    playBtn.style.cursor = 'pointer';
+    
+    playBtn.addEventListener('click', () => {
+        bgMusic.play();
+        playBtn.remove();
+    });
+    
+    document.body.appendChild(playBtn);
+}
+        document.addEventListener('DOMContentLoaded', () => {
+            const board = document.getElementById('gameBoard');
+            const scoreDisplay = document.getElementById('score');
+            const movesDisplay = document.getElementById('moves');
+            const targetDisplay = document.getElementById('target');
+            const restartButton = document.getElementById('restart');
+            const hintButton = document.getElementById('hint');
+            const directionIndicator = document.getElementById('directionIndicator');
+            const levelComplete = document.getElementById('levelComplete');
+            const finalScoreDisplay = document.getElementById('finalScore');
+            const starsDisplay = document.getElementById('stars');
+            const nextLevelButton = document.getElementById('nextLevel');
+            const soundToggle = document.getElementById('soundToggle');
+            
+            // Sound effects
+            const sounds = {
+                swap: new Audio('swap.mp3'),
+                match: new Audio('matching.mp3'),
+                specialMatch: new Audio('jucy.mp3'),
+                fall: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-arrow-whoosh-1491.mp3'),
+                win: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3'),
+                lose: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3'),
+                button: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3'),
+                bomb: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-explosion-impact-1684.mp3'),
+                hint: new Audio('hint.mp3')
+            };
+            
+            // Set sound volume
+            Object.values(sounds).forEach(sound => {
+                sound.volume = 0.3;
+            });
+            
+            let soundEnabled = true;
+            
+            // Toggle sound
+            
+            function playSound(sound) {
+                if (!soundEnabled) return;
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Sound play failed:", e));
+            }
+            
+            const width = 8;
+            const sweetTypes = [
+                { 
+                    name: 'Kavum', 
+                    image: 'https://nz.lakpura.com/cdn/shop/files/LSH0006D5E-10-E.jpg?v=1714124571&width=1946', 
+                    color: '#8B4513' 
+                }, // Traditional oil cake
+                { 
+                    name: 'Kokis', 
+                    image: 'https://as1.ftcdn.net/v2/jpg/02/59/07/32/1000_F_259073290_XTTSPGYCCFxGAsNvY8iRN9LuysI1YjTv.jpg', 
+                    color: '#FFA500' 
+                },  // Crispy sweet
+                { 
+                    name: 'Aasmi', 
+                    image: 'https://lankancart.com/image/cache/catalog/lankancart/vendors/clkbake/aasmi-550x550w.jpg', 
+                    color: '#FFD700' 
+                },  // String hopper sweet
+                { 
+                    name: 'Aluwa', 
+                    image: 'https://taplow.lk/wp-content/uploads/2024/03/WhatsApp-Image-2024-03-27-at-10.09.42.jpeg', 
+                    color: '#FF6347' 
+                },  // Rice flour sweet
+                { 
+                    name: 'Mung Kavum', 
+                    image: 'https://www.sunonline.lk/cdn/shop/products/SUN-MUN-01_300x300.jpg?v=1648016190', 
+                    color: '#2E8B57' 
+                }, // Green gram sweet
+                { 
+                    name: 'Weli Thalapa', 
+                    image: 'https://leyonsuper.com/wp-content/uploads/2024/12/WhatsApp-Image-2024-12-12-at-19.24.10_a4e7a8c1.jpg', 
+                    color: '#9370DB' 
+                } // Flour sweet
+            ];
+            
+            // Preload images
+            function preloadImages() {
+                sweetTypes.forEach(sweet => {
+                    const img = new Image();
+                    img.src = sweet.image;
+                });
+            }
+            
+            preloadImages();
+            
+            let score = 0;
+            let movesLeft = 20;
+            let targetScore = 1000;
+            let level = 1;
+            let boardArray = [];
+            let isDragging = false;
+            let dragStartSweet = null;
+            let dragStartX = 0;
+            let dragStartY = 0;
+            let touchId = null;
+            let currentDragOffset = { x: 0, y: 0 };
+            let swapCandidate = null;
+            let isProcessing = false;
+            
+            // Initialize game
+            function initGame() {
+                board.innerHTML = '';
+                score = 0;
+                movesLeft = 20 + (level * 5);
+                targetScore = 1000 + (level * 500);
+                scoreDisplay.textContent = score;
+                movesDisplay.textContent = movesLeft;
+                targetDisplay.textContent = `Target: ${targetScore}`;
+                boardArray = Array(width * width).fill(null);
+                
+                // Create tiles first
+                for (let i = 0; i < width * width; i++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.dataset.index = i;
+                    board.appendChild(tile);
+                }
+                
+                // Then create sweets
+                createBoard();
+                
+                // Ensure no matches exist at start
+                let matches;
+                do {
+                    matches = checkForMatches();
+                    if (matches.length > 0) {
+                        // Replace matched sweets with new ones
+                        matches.forEach(index => {
+                            boardArray[index] = createSweetObject();
+                            updateSweetElement(index);
+                        });
+                    }
+                } while (matches.length > 0);
+                
+                levelComplete.classList.remove('show');
+            }
+            
+            // Create board with sweets
+            function createBoard() {
+                for (let i = 0; i < width * width; i++) {
+                    boardArray[i] = createSweetObject();
+                    createSweetElement(i);
+                }
+            }
+            
+            // Create sweet object
+            function createSweetObject(isSpecial = false) {
+                if (isSpecial || Math.random() < 0.1) {
+                    const specialType = Math.floor(Math.random() * 4);
+                    const baseType = getRandomBaseType();
+                    
+                    switch(specialType) {
+                        case 0: // Striped horizontal
+                            return {
+                                ...baseType,
+                                special: 'striped-h',
+                                power: (matches) => explodeRow(matches)
+                            };
+                        case 1: // Striped vertical
+                            return {
+                                ...baseType,
+                                special: 'striped-v',
+                                power: (matches) => explodeColumn(matches)
+                            };
+                        case 2: // Wrapped
+                            return {
+                                ...baseType,
+                                special: 'wrapped',
+                                power: (matches) => explodeArea(matches, 1)
+                            };
+                        case 3: // Sweet bomb
+                            return {
+                                image: 'images.jpg', // Special bomb image
+                                name: 'Sweet Bomb',
+                                special: 'sweet-bomb',
+                                power: (matches) => explodeColor(matches)
+                            };
+                    }
+                }
+                
+                return getRandomBaseType();
+            }
+            
+            function getRandomBaseType() {
+                return sweetTypes[Math.floor(Math.random() * sweetTypes.length)];
+            }
+            
+            // Create sweet element
+            function createSweetElement(index) {
+                const tile = board.children[index];
+                tile.innerHTML = '';
+                
+                const sweet = document.createElement('div');
+                sweet.className = 'sweet';
+                sweet.dataset.index = index;
+                sweet.style.backgroundImage = `url('${boardArray[index].image}')`;
+                sweet.style.backgroundColor = boardArray[index].color || 'transparent';
+                
+                // Add special sweet if needed
+                if (boardArray[index].special) {
+                    const special = document.createElement('div');
+                    special.className = 'special-sweet';
+                    
+                    switch(boardArray[index].special) {
+                        case 'striped-h':
+                            special.innerHTML = '<div class="striped-h"></div>';
+                            break;
+                        case 'striped-v':
+                            special.innerHTML = '<div class="striped-v"></div>';
+                            break;
+                        case 'wrapped':
+                            special.innerHTML = '<div class="wrapped"></div>';
+                            break;
+                        case 'sweet-bomb':
+                            special.innerHTML = '<div class="sweet-bomb">★</div>';
+                            break;
+                    }
+                    
+                    tile.appendChild(special);
+                }
+                
+                // Add event listeners for drag/swipe
+                sweet.addEventListener('mousedown', startDrag);
+                sweet.addEventListener('touchstart', startDrag, { passive: false });
+                
+                tile.appendChild(sweet);
+                return sweet;
+            }
+            
+            // Update sweet appearance
+            function updateSweetElement(index) {
+                const tile = board.children[index];
+                if (!tile || !boardArray[index]) return;
+                
+                createSweetElement(index);
+            }
+            
+            // Start drag/swipe
+            function startDrag(e) {
+                if (movesLeft <= 0 || isProcessing) return;
+                
+                e.preventDefault();
+                isDragging = true;
+                dragStartSweet = e.currentTarget;
+                dragStartSweet.classList.add('dragging');
+                
+                const index = parseInt(dragStartSweet.parentElement.dataset.index);
+                const rect = dragStartSweet.getBoundingClientRect();
+                dragStartX = (e.clientX || e.touches[0].clientX);
+                dragStartY = (e.clientY || e.touches[0].clientY);
+                
+                if (e.touches) {
+                    touchId = e.touches[0].identifier;
+                }
+                
+                // Set up move and end listeners
+                document.addEventListener('mousemove', handleDrag);
+                document.addEventListener('touchmove', handleDrag, { passive: false });
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchend', endDrag);
+                document.addEventListener('touchcancel', endDrag);
+            }
+            
+            // Handle drag movement
+            function handleDrag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const touch = e.touches ? Array.from(e.touches).find(t => t.identifier === touchId) : null;
+                if (e.touches && !touch) return;
+                
+                const clientX = touch ? touch.clientX : e.clientX;
+                const clientY = touch ? touch.clientY : e.clientY;
+                
+                // Calculate drag offset
+                currentDragOffset = {
+                    x: clientX - dragStartX,
+                    y: clientY - dragStartY
+                };
+                
+                // Apply transform to dragged sweet
+                dragStartSweet.style.transform = `translate(${currentDragOffset.x}px, ${currentDragOffset.y}px)`;
+                
+                // Show direction indicator
+                showDirectionIndicator(dragStartSweet, currentDragOffset.x, currentDragOffset.y);
+                
+                // Check for potential swap candidate
+                checkForSwapCandidate();
+            }
+            
+            // Check if we should highlight a sweet to swap with
+            function checkForSwapCandidate() {
+                const index = parseInt(dragStartSweet.parentElement.dataset.index);
+                const row = Math.floor(index / width);
+                const col = index % width;
+                
+                const absDx = Math.abs(currentDragOffset.x);
+                const absDy = Math.abs(currentDragOffset.y);
+                
+                // Only consider swap if drag is significant in one direction
+                if (Math.max(absDx, absDy) < 30) {
+                    if (swapCandidate) {
+                        swapCandidate.style.transform = '';
+                        swapCandidate = null;
+                    }
+                    return;
+                }
+                
+                let candidateIndex = -1;
+                
+                // Determine primary direction
+                if (absDx > absDy) {
+                    // Horizontal swipe
+                    if (currentDragOffset.x > 0 && col < width - 1) {
+                        // Right
+                        candidateIndex = index + 1;
+                    } else if (currentDragOffset.x < 0 && col > 0) {
+                        // Left
+                        candidateIndex = index - 1;
+                    }
+                    
+                    // Check if candidate is in same row
+                    if (candidateIndex !== -1 && Math.floor(candidateIndex / width) !== row) {
+                        candidateIndex = -1;
+                    }
+                } else {
+                    // Vertical swipe
+                    if (currentDragOffset.y > 0 && row < width - 1) {
+                        // Down
+                        candidateIndex = index + width;
+                    } else if (currentDragOffset.y < 0 && row > 0) {
+                        // Up
+                        candidateIndex = index - width;
+                    }
+                }
+                
+                // Update swap candidate
+                if (candidateIndex !== -1) {
+                    // If we have a new candidate
+                    if (!swapCandidate || parseInt(swapCandidate.parentElement.dataset.index) !== candidateIndex) {
+                        // Reset previous candidate
+                        if (swapCandidate) {
+                            swapCandidate.style.transform = '';
+                        }
+                        
+                        // Set new candidate
+                        swapCandidate = board.children[candidateIndex].querySelector('.sweet');
+                        if (swapCandidate) {
+                            swapCandidate.style.transform = 'scale(0.9)';
+                        } else {
+                            swapCandidate = null;
+                        }
+                    }
+                } else if (swapCandidate) {
+                    // No valid candidate, reset if we had one
+                    swapCandidate.style.transform = '';
+                    swapCandidate = null;
+                }
+            }
+            
+            // Show direction arrow for swipe
+            function showDirectionIndicator(sweet, dx, dy) {
+                directionIndicator.innerHTML = '';
+                
+                const index = parseInt(sweet.parentElement.dataset.index);
+                const row = Math.floor(index / width);
+                const col = index % width;
+                
+                const absDx = Math.abs(dx);
+                const absDy = Math.abs(dy);
+                
+                // Only show if drag is significant in one direction
+                if (Math.max(absDx, absDy) < 30) {
+                    directionIndicator.classList.remove('active');
+                    return;
+                }
+                
+                directionIndicator.classList.add('active');
+                
+                const arrow = document.createElement('div');
+                arrow.className = 'direction-arrow';
+                
+                // Determine primary direction
+                if (absDx > absDy) {
+                    // Horizontal swipe
+                    if (dx > 0 && col < width - 1) {
+                        // Right
+                        arrow.textContent = '→';
+                        arrow.style.left = `${(col + 1.5) * (100 / width)}%`;
+                        arrow.style.top = `${(row + 0.5) * (100 / width)}%`;
+                    } else if (dx < 0 && col > 0) {
+                        // Left
+                        arrow.textContent = '←';
+                        arrow.style.left = `${(col - 0.5) * (100 / width)}%`;
+                        arrow.style.top = `${(row + 0.5) * (100 / width)}%`;
+                    }
+                } else {
+                    // Vertical swipe
+                    if (dy > 0 && row < width - 1) {
+                        // Down
+                        arrow.textContent = '↓';
+                        arrow.style.left = `${(col + 0.5) * (100 / width)}%`;
+                        arrow.style.top = `${(row + 1.5) * (100 / width)}%`;
+                    } else if (dy < 0 && row > 0) {
+                        // Up
+                        arrow.textContent = '↑';
+                        arrow.style.left = `${(col + 0.5) * (100 / width)}%`;
+                        arrow.style.top = `${(row - 0.5) * (100 / width)}%`;
+                    }
+                }
+                
+                if (arrow.textContent) {
+                    directionIndicator.appendChild(arrow);
+                }
+            }
+            
+            // End drag/swipe
+            function endDrag(e) {
+                if (!isDragging) return;
+                
+                e.preventDefault();
+                isDragging = false;
+                directionIndicator.classList.remove('active');
+                dragStartSweet.classList.remove('dragging');
+                
+                const touch = e.touches ? Array.from(e.changedTouches).find(t => t.identifier === touchId) : null;
+                if (e.touches && !touch) return;
+                
+                // Reset dragged sweet position
+                dragStartSweet.style.transform = '';
+                
+                // Check if we have a swap candidate
+                if (swapCandidate) {
+                    const startIndex = parseInt(dragStartSweet.parentElement.dataset.index);
+                    const targetIndex = parseInt(swapCandidate.parentElement.dataset.index);
+                    
+                    // Play swap sound
+                    playSound(sounds.swap);
+                    
+                    // Perform swap
+                    swapSweets(dragStartSweet, swapCandidate, startIndex, targetIndex);
+                    
+                    // Reset swap candidate
+                    swapCandidate.style.transform = '';
+                    swapCandidate = null;
+                }
+                
+                cleanupDrag();
+            }
+            
+            function cleanupDrag() {
+                document.removeEventListener('mousemove', handleDrag);
+                document.removeEventListener('touchmove', handleDrag);
+                document.removeEventListener('mouseup', endDrag);
+                document.removeEventListener('touchend', endDrag);
+                document.removeEventListener('touchcancel', endDrag);
+                touchId = null;
+            }
+            
+            // Swap sweets with animation
+            function swapSweets(sweet1, sweet2, index1, index2) {
+                isProcessing = true;
+                
+                // Swap in array
+                [boardArray[index1], boardArray[index2]] = [boardArray[index2], boardArray[index1]];
+                
+                // Animate swap
+                sweet1.style.transition = 'transform 0.3s ease-out';
+                sweet2.style.transition = 'transform 0.3s ease-out';
+                
+                // Calculate positions
+                const rect1 = sweet1.getBoundingClientRect();
+                const rect2 = sweet2.getBoundingClientRect();
+                const dx = rect2.left - rect1.left;
+                const dy = rect2.top - rect1.top;
+                
+                // Move sweets to each other's positions
+                sweet1.style.transform = `translate(${dx}px, ${dy}px)`;
+                sweet2.style.transform = `translate(${-dx}px, ${-dy}px)`;
+                
+                setTimeout(() => {
+                    // Update visuals
+                    updateSweetElement(index1);
+                    updateSweetElement(index2);
+                    
+                    // Reset transforms
+                    sweet1.style.transform = '';
+                    sweet2.style.transform = '';
+                    
+                    // Check for matches
+                    const matches = checkForMatches();
+                    
+                    if (matches.length > 0) {
+                        // Valid move - process matches
+                        movesLeft--;
+                        movesDisplay.textContent = movesLeft;
+                        processMatches(matches);
+                    } else {
+                        // Invalid move - swap back
+                        [boardArray[index1], boardArray[index2]] = [boardArray[index2], boardArray[index1]];
+                        
+                        setTimeout(() => {
+                            sweet1.style.transition = 'transform 0.3s ease-out';
+                            sweet2.style.transition = 'transform 0.3s ease-out';
+                            
+                            sweet1.style.transform = `translate(${-dx}px, ${-dy}px)`;
+                            sweet2.style.transform = `translate(${dx}px, ${dy}px)`;
+                            
+                            setTimeout(() => {
+                                updateSweetElement(index1);
+                                updateSweetElement(index2);
+                                
+                                sweet1.style.transform = '';
+                                sweet2.style.transform = '';
+                                isProcessing = false;
+                            }, 300);
+                        }, 300);
+                    }
+                    
+                    // Check game over or level complete
+                    if (movesLeft <= 0) {
+                        setTimeout(() => {
+                            if (score >= targetScore) {
+                                showLevelComplete();
+                            } else {
+                                playSound(sounds.lose);
+                                alert(`Game Over!\nYour score: ${score}`);
+                            }
+                        }, 1000);
+                    } else if (score >= targetScore) {
+                        showLevelComplete();
+                    }
+                }, 300);
+            }
+            
+            function showLevelComplete() {
+                playSound(sounds.win);
+                finalScoreDisplay.textContent = score;
+                
+                // Calculate stars (1-3) based on score
+                const starRatio = Math.min(1, score / (targetScore * 1.5));
+                const stars = Math.max(1, Math.floor(starRatio * 3));
+                starsDisplay.textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+                
+                levelComplete.classList.add('show');
+            }
+            
+            // Check for matches
+            function checkForMatches() {
+                let matches = new Set();
+                
+                // Check horizontal matches
+                for (let row = 0; row < width; row++) {
+                    for (let col = 0; col < width - 2; col++) {
+                        const index = row * width + col;
+                        if (boardArray[index] && 
+                            boardArray[index + 1] && 
+                            boardArray[index + 2] &&
+                            boardArray[index].image === boardArray[index + 1].image && 
+                            boardArray[index].image === boardArray[index + 2].image) {
+                            // Check for longer matches (4 or 5 in a row)
+                            let matchLength = 3;
+                            while (col + matchLength < width && 
+                                   boardArray[index + matchLength] && 
+                                   boardArray[index + matchLength].image === boardArray[index].image) {
+                                matchLength++;
+                            }
+                            
+                            // Create special sweet for matches of 4+
+                            if (matchLength >= 4) {
+                                const middleIndex = index + Math.floor(matchLength / 2);
+                                if (matchLength === 4) {
+                                    // Create wrapped sweet
+                                    boardArray[middleIndex] = {
+                                        ...boardArray[middleIndex],
+                                        special: 'wrapped',
+                                        power: (matches) => explodeArea(matches, 1)
+                                    };
+                                } else if (matchLength >= 5) {
+                                    // Create sweet bomb
+                                    boardArray[middleIndex] = {
+                                        image: 'https://i.imgur.com/zX9Q8rJ.png',
+                                        name: 'Sweet Bomb',
+                                        special: 'sweet-bomb',
+                                        power: (matches) => explodeColor(matches)
+                                    };
+                                }
+                            }
+                            
+                            for (let i = 0; i < matchLength; i++) {
+                                matches.add(index + i);
+                            }
+                            
+                            col += matchLength - 1;
+                        }
+                    }
+                }
+                
+                // Check vertical matches
+                for (let col = 0; col < width; col++) {
+                    for (let row = 0; row < width - 2; row++) {
+                        const index = row * width + col;
+                        if (boardArray[index] && 
+                            boardArray[index + width] && 
+                            boardArray[index + width * 2] &&
+                            boardArray[index].image === boardArray[index + width].image && 
+                            boardArray[index].image === boardArray[index + width * 2].image) {
+                            // Check for longer matches (4 or 5 in a row)
+                            let matchLength = 3;
+                            while (row + matchLength < width && 
+                                   boardArray[index + matchLength * width] && 
+                                   boardArray[index + matchLength * width].image === boardArray[index].image) {
+                                matchLength++;
+                            }
+                            
+                            // Create special sweet for matches of 4+
+                            if (matchLength >= 4) {
+                                const middleIndex = index + Math.floor(matchLength / 2) * width;
+                                if (matchLength === 4) {
+                                    // Create wrapped sweet
+                                    boardArray[middleIndex] = {
+                                        ...boardArray[middleIndex],
+                                        special: 'wrapped',
+                                        power: (matches) => explodeArea(matches, 1)
+                                    };
+                                } else if (matchLength >= 5) {
+                                    // Create sweet bomb
+                                    boardArray[middleIndex] = {
+                                        image: 'https://i.imgur.com/zX9Q8rJ.png',
+                                        name: 'Sweet Bomb',
+                                        special: 'sweet-bomb',
+                                        power: (matches) => explodeColor(matches)
+                                    };
+                                }
+                            }
+                            
+                            for (let i = 0; i < matchLength; i++) {
+                                matches.add(index + i * width);
+                            }
+                            
+                            row += matchLength - 1;
+                        }
+                    }
+                }
+                
+                return Array.from(matches);
+            }
+            
+            // Process matches
+            function processMatches(matches) {
+                // First, activate any special sweets
+                const specialMatches = new Set();
+                let hasSpecial = false;
+                
+                matches.forEach(index => {
+                    if (boardArray[index] && boardArray[index].special) {
+                        hasSpecial = true;
+                        // Add all matches from special power
+                        const additionalMatches = boardArray[index].power(matches);
+                        additionalMatches.forEach(i => specialMatches.add(i));
+                    }
+                });
+                
+                // Play appropriate match sound
+                if (hasSpecial) {
+                    playSound(sounds.specialMatch);
+                    if (matches.some(index => boardArray[index].special === 'sweet-bomb')) {
+                        playSound(sounds.bomb);
+                    }
+                } else {
+                    playSound(sounds.match);
+                }
+                
+                // Combine all matches
+                const allMatches = Array.from(new Set([...matches, ...specialMatches]));
+                
+                // Add to score
+                const matchScore = allMatches.length * 10;
+                score += matchScore;
+                scoreDisplay.textContent = score;
+                
+                // Mark matched sweets
+                allMatches.forEach(index => {
+                    const sweet = board.children[index].querySelector('.sweet');
+                    if (sweet) {
+                        sweet.classList.add('matched');
+                    }
+                });
+                
+                // After animation, remove and replace sweets
+                setTimeout(() => {
+                    // Sort matches by column for proper gravity
+                    const columns = {};
+                    allMatches.sort((a, b) => a - b).forEach(index => {
+                        const col = index % width;
+                        if (!columns[col]) columns[col] = 0;
+                        columns[col]++;
+                    });
+                    
+                    // Process each column
+                    Object.keys(columns).forEach(col => {
+                        col = parseInt(col);
+                        const count = columns[col];
+                        
+                        // Move sweets down
+                        for (let row = width - 1; row >= 0; row--) {
+                            const index = row * width + col;
+                            
+                            if (allMatches.includes(index)) {
+                                // Find next sweet above to pull down
+                                let aboveRow = row - 1;
+                                while (aboveRow >= 0 && allMatches.includes(aboveRow * width + col)) {
+                                    aboveRow--;
+                                }
+                                
+                                if (aboveRow >= 0) {
+                                    // Move sweet down
+                                    const aboveIndex = aboveRow * width + col;
+                                    boardArray[index] = boardArray[aboveIndex];
+                                    updateSweetElement(index);
+                                    boardArray[aboveIndex] = null;
+                                } else {
+                                    // Add new sweet at top
+                                    boardArray[index] = createSweetObject();
+                                    updateSweetElement(index);
+                                }
+                            }
+                        }
+                        
+                        // Fill any remaining empty spots at top
+                        for (let row = 0; row < width; row++) {
+                            const index = row * width + col;
+                            if (!boardArray[index]) {
+                                boardArray[index] = createSweetObject();
+                                updateSweetElement(index);
+                                const sweet = board.children[index].querySelector('.sweet');
+                                if (sweet) {
+                                    sweet.style.transform = 'translateY(-100%)';
+                                    sweet.style.transition = 'transform 0.3s ease-out';
+                                    
+                                    // Play falling sound
+                                    setTimeout(() => {
+                                        playSound(sounds.fall);
+                                        sweet.style.transform = '';
+                                    }, 100);
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Check for new matches after replacement
+                    setTimeout(() => {
+                        const newMatches = checkForMatches();
+                        if (newMatches.length > 0) {
+                            processMatches(newMatches);
+                        } else {
+                            isProcessing = false;
+                            
+                            // Check level completion
+                            if (score >= targetScore) {
+                                showLevelComplete();
+                            }
+                        }
+                    }, 500);
+                }, 500);
+            }
+            
+            // Special sweet powers
+            function explodeRow(matches) {
+                const rows = new Set();
+                matches.forEach(index => {
+                    rows.add(Math.floor(index / width));
+                });
+                
+                const newMatches = [];
+                rows.forEach(row => {
+                    for (let col = 0; col < width; col++) {
+                        const index = row * width + col;
+                        newMatches.push(index);
+                    }
+                });
+                
+                return newMatches;
+            }
+            
+            function explodeColumn(matches) {
+                const cols = new Set();
+                matches.forEach(index => {
+                    cols.add(index % width);
+                });
+                
+                const newMatches = [];
+                cols.forEach(col => {
+                    for (let row = 0; row < width; row++) {
+                        const index = row * width + col;
+                        newMatches.push(index);
+                    }
+                });
+                
+                return newMatches;
+            }
+            
+            function explodeArea(matches, radius) {
+                const newMatches = [];
+                matches.forEach(index => {
+                    const row = Math.floor(index / width);
+                    const col = index % width;
+                    
+                    for (let r = Math.max(0, row - radius); r <= Math.min(width - 1, row + radius); r++) {
+                        for (let c = Math.max(0, col - radius); c <= Math.min(width - 1, col + radius); c++) {
+                            newMatches.push(r * width + c);
+                        }
+                    }
+                });
+                
+                return newMatches;
+            }
+            
+            function explodeColor(matches) {
+                if (matches.length === 0) return [];
+                
+                // Get image of first matched sweet
+                const image = boardArray[matches[0]].image;
+                const newMatches = [];
+                
+                // Remove all sweets of this type
+                for (let i = 0; i < width * width; i++) {
+                    if (boardArray[i] && boardArray[i].image === image) {
+                        newMatches.push(i);
+                    }
+                }
+                
+                return newMatches;
+            }
+            
+            // Hint functionality
+            hintButton.addEventListener('click', () => {
+                if (movesLeft <= 0 || isProcessing) return;
+                
+                playSound(sounds.hint);
+                
+                // Find all possible matches
+                const possibleMoves = [];
+                
+                // Check horizontal swaps
+                for (let row = 0; row < width; row++) {
+                    for (let col = 0; col < width - 1; col++) {
+                        const index = row * width + col;
+                        const rightIndex = index + 1;
+                        
+                        // Swap in array
+                        [boardArray[index], boardArray[rightIndex]] = [boardArray[rightIndex], boardArray[index]];
+                        
+                        // Check for matches
+                        const matches = checkForMatches();
+                        if (matches.length > 0) {
+                            possibleMoves.push({
+                                index1: index,
+                                index2: rightIndex,
+                                matches: matches.length
+                            });
+                        }
+                        
+                        // Swap back
+                        [boardArray[index], boardArray[rightIndex]] = [boardArray[rightIndex], boardArray[index]];
+                    }
+                }
+                
+                // Check vertical swaps
+                for (let col = 0; col < width; col++) {
+                    for (let row = 0; row < width - 1; row++) {
+                        const index = row * width + col;
+                        const downIndex = index + width;
+                        
+                        // Swap in array
+                        [boardArray[index], boardArray[downIndex]] = [boardArray[downIndex], boardArray[index]];
+                        
+                        // Check for matches
+                        const matches = checkForMatches();
+                        if (matches.length > 0) {
+                            possibleMoves.push({
+                                index1: index,
+                                index2: downIndex,
+                                matches: matches.length
+                            });
+                        }
+                        
+                        // Swap back
+                        [boardArray[index], boardArray[downIndex]] = [boardArray[downIndex], boardArray[index]];
+                    }
+                }
+                
+                if (possibleMoves.length > 0) {
+                    // Find the move with most matches
+                    possibleMoves.sort((a, b) => b.matches - a.matches);
+                    const bestMove = possibleMoves[0];
+                    
+                    // Highlight the sweets
+                    const sweet1 = board.children[bestMove.index1].querySelector('.sweet');
+                    const sweet2 = board.children[bestMove.index2].querySelector('.sweet');
+                    
+                    if (sweet1 && sweet2) {
+                        sweet1.style.boxShadow = '0 0 15px 5px rgba(255, 215, 0, 0.8)';
+                        sweet2.style.boxShadow = '0 0 15px 5px rgba(255, 215, 0, 0.8)';
+                        
+                        setTimeout(() => {
+                            sweet1.style.boxShadow = '';
+                            sweet2.style.boxShadow = '';
+                        }, 1500);
+                    }
+                } else {
+                    alert("No possible moves found! Try shuffling the board.");
+                }
+            });
+            
+            // Restart game
+            restartButton.addEventListener('click', () => {
+                playSound(sounds.button);
+                level = 1;
+                initGame();
+            });
+            
+            // Next level
+            nextLevelButton.addEventListener('click', () => {
+                playSound(sounds.button);
+                level++;
+                initGame();
+            });
+            
+            // Initialize game
+            initGame();
+        });
+    </script>
+</body>
+</html>
